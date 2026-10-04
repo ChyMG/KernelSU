@@ -206,16 +206,51 @@ jobs:
 
       - name: Write key
         if: env.CAN_SIGN == 'true'
+        env:
+          KEYSTORE_B64: ${{ secrets.KEYSTORE }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          if [ ! -z "${{ secrets.KEYSTORE }}" ]; then
-            {
-              echo KEYSTORE_PASSWORD='${{ secrets.KEYSTORE_PASSWORD }}'
-              echo KEY_ALIAS='${{ secrets.KEY_ALIAS }}'
-              echo KEY_PASSWORD='${{ secrets.KEY_PASSWORD }}'
-              echo KEYSTORE_FILE='key.jks'
-            } >> gradle.properties
-            echo "${{ secrets.KEYSTORE }}" | base64 -d > key.jks
+          set -euo pipefail
+          if [ -z "$KEYSTORE_B64" ]; then
+            exit 0
           fi
+          printf '%s' "$KEYSTORE_B64" | base64 -d > key.jks
+          # Gradle loads gradle.properties as ISO-8859-1, so a non-ASCII key
+          # alias or password has to be written as a Java unicode escape.
+          # Otherwise a CJK alias reads back as mojibake and keytool reports
+          # "No key with alias found".
+          python3 <<'PY'
+          import os, string
+
+          SAFE = set(string.printable) - set("\\") - set("=:!#") - set(" \t\r\n")
+
+          def esc(value):
+              out = []
+              for ch in value:
+                  if ch in SAFE:
+                      out.append(ch)
+                      continue
+                  code = ord(ch)
+                  if code > 0xFFFF:
+                      code -= 0x10000
+                      units = (0xD800 + (code >> 10), 0xDC00 + (code & 0x3FF))
+                  else:
+                      units = (code,)
+                  out += ["\\u%04x" % u for u in units]
+              return "".join(out)
+
+          props = [
+              ("KEYSTORE_PASSWORD", os.environ["KEYSTORE_PASSWORD"]),
+              ("KEY_ALIAS", os.environ["KEY_ALIAS"]),
+              ("KEY_PASSWORD", os.environ["KEY_PASSWORD"]),
+              ("KEYSTORE_FILE", "key.jks"),
+          ]
+          with open("gradle.properties", "a", encoding="ascii") as fp:
+              for key, value in props:
+                  fp.write("%s=%s\n" % (key, esc(value)))
+          PY
 
       - name: Write PR key
         if: github.event_name == 'pull_request'
