@@ -43,7 +43,6 @@ import androidx.compose.material.icons.rounded.DesignServices
 import androidx.compose.material.icons.rounded.Pin
 import androidx.compose.material.icons.rounded.Style
 import androidx.compose.material.icons.rounded.Wallpaper
-import androidx.compose.material.icons.rounded.WaterDrop
 import androidx.compose.material.icons.rounded.Swipe
 import androidx.compose.material.icons.rounded.ViewCarousel
 import androidx.compose.runtime.Composable
@@ -86,6 +85,7 @@ import top.yukonga.miuix.kmp.basic.Scaffold
 import top.yukonga.miuix.kmp.basic.Slider
 import top.yukonga.miuix.kmp.basic.SliderDefaults
 import top.yukonga.miuix.kmp.basic.TabRow
+import top.yukonga.miuix.kmp.basic.TabRowDefaults
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.basic.TopAppBar
 import top.yukonga.miuix.kmp.blur.layerBackdrop
@@ -177,6 +177,13 @@ fun ColorPaletteScreenMiuix(
                         onTabSelected = { index ->
                             actions.onSetThemeMode(index)
                         },
+                        // 默认 TabRow 的未选中底色取自 surface，而 surface 为了加载
+                        // 对话框/搜索框一直保持不透明，于是这三个按钮在壁纸上就是
+                        // 白色方框。改成透明，选中项用主色的淡底区分。
+                        colors = TabRowDefaults.tabRowColors(
+                            backgroundColor = Color.Transparent,
+                            selectedBackgroundColor = colorScheme.primary.copy(alpha = 0.18f),
+                        ),
                     )
 
                     Card(
@@ -324,24 +331,8 @@ fun ColorPaletteScreenMiuix(
                                 actions.onSetEnableFloatingBottomBar(it)
                             }
                         )
-                        AnimatedVisibility(visible = uiState.enableFloatingBottomBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            SwitchPreference(
-                                title = stringResource(id = R.string.settings_enable_glass),
-                                summary = stringResource(id = R.string.settings_enable_glass_summary),
-                                startAction = {
-                                    Icon(
-                                        Icons.Rounded.WaterDrop,
-                                        modifier = Modifier.padding(end = 6.dp),
-                                        contentDescription = stringResource(id = R.string.settings_enable_glass),
-                                        tint = colorScheme.onBackground
-                                    )
-                                },
-                                checked = uiState.enableFloatingBottomBarBlur,
-                                onCheckedChange = {
-                                    actions.onSetEnableFloatingBottomBarBlur(it)
-                                }
-                            )
-                        }
+                        // 「液态玻璃」选项已隐藏：背后的 enableFloatingBottomBarBlur
+                        // 实现原样保留，只是不再在设置里暴露这个开关。
                         SwitchPreference(
                             title = stringResource(id = R.string.settings_navigation_badge),
                             summary = stringResource(id = R.string.settings_navigation_badge_summary),

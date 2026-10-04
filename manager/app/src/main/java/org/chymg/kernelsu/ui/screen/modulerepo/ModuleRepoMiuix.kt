@@ -1101,7 +1101,8 @@ fun ModuleRepoDetailScreenMiuix(
                                 }
                             },
                             colors = TabRowDefaults.tabRowColors(
-                                backgroundColor = Color.Transparent
+                                backgroundColor = Color.Transparent,
+                                selectedBackgroundColor = colorScheme.primary.copy(alpha = 0.18f),
                             ),
                             height = tabRowHeight,
                         )
