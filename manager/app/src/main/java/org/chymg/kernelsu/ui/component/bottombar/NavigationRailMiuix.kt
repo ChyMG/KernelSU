@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import org.chymg.kernelsu.Natives
 import org.chymg.kernelsu.R
@@ -13,7 +14,6 @@ import top.yukonga.miuix.kmp.basic.NavigationRail
 import top.yukonga.miuix.kmp.basic.NavigationRailItem
 import top.yukonga.miuix.kmp.basic.NavigationRailValue
 import top.yukonga.miuix.kmp.basic.rememberNavigationRailState
-import top.yukonga.miuix.kmp.theme.MiuixTheme
 
 @Composable
 fun NavigationRailMiuix(
@@ -43,7 +43,7 @@ fun NavigationRailMiuix(
     NavigationRail(
         modifier = modifier,
         state = state,
-        color = MiuixTheme.colorScheme.surface,
+        color = Color.Transparent,
         expandContentDescription = stringResource(R.string.nav_rail_expand),
         collapseContentDescription = stringResource(R.string.nav_rail_collapse),
     ) {

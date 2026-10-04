@@ -28,7 +28,7 @@ fun MaterialKernelSUTheme(
         isAmoled = amoledMode,
         paletteStyle = appSettings.paletteStyle,
         colorSpec = appSettings.colorSpec,
-    ).withGlobalTextColor()
+    ).withWallpaperTheme()
 
     LaunchedEffect(darkTheme) {
         val window = (context as? Activity)?.window ?: return@LaunchedEffect

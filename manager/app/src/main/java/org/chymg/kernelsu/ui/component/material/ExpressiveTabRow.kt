@@ -27,7 +27,7 @@ fun ExpressiveTabRow(
     tabs: List<String>,
     onTabClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    containerColor: Color = Color.Transparent,
 ) {
     val safeIndex = selectedTabIndex.coerceIn(0, (tabs.size - 1).coerceAtLeast(0))
     PrimaryTabRow(

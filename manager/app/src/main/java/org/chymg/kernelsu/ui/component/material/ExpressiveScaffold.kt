@@ -8,7 +8,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,11 +20,9 @@ fun ExpressiveScaffold(
     snackbarHost: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
-    // Transparent so the wallpaper painted in MainActivity shows through.
-    // contentColor keeps deriving from the *would-be* container color, since
-    // contentColorFor() has no mapping for Color.Transparent.
+    // 透明 + 淡蓝，让 MainActivity 里那张壁纸直接透出来。
     containerColor: Color = Color.Transparent,
-    contentColor: Color = contentColorFor(MaterialTheme.colorScheme.surfaceContainer),
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
     contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
     content: @Composable (PaddingValues) -> Unit,
 ) {

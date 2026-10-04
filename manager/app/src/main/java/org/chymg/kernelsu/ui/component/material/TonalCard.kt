@@ -7,7 +7,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -20,7 +19,9 @@ import androidx.compose.ui.graphics.Shape
 fun TonalCard(
     modifier: Modifier = Modifier,
     containerColor: Color = MaterialTheme.colorScheme.surfaceBright,
-    contentColor: Color = contentColorFor(containerColor),
+    // containerColor 默认为透明，contentColorFor() 对透明色返回 Unspecified，
+    // 所以这里必须显式给一个。
+    contentColor: Color = MaterialTheme.colorScheme.onSurface,
     shape: Shape = MaterialTheme.shapes.large,
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null,

@@ -373,7 +373,15 @@ private fun getMarkdownColors(containerColor: androidx.compose.ui.graphics.Color
         }
 
         UiMode.Miuix -> {
-            val bgArgb = containerColor?.toArgb() ?: MiuixTheme.colorScheme.surfaceContainer.toArgb()
+            // surfaceContainer 为了透出壁纸已经改成透明，直接拿它算亮度会得到
+            // 全 0，代码块配色会跟着塌掉，所以透明时退回不透明的
+            // surfaceContainerHigh。
+            val base = containerColor ?: MiuixTheme.colorScheme.surfaceContainer
+            val bgArgb = if (base.alpha == 0f) {
+                MiuixTheme.colorScheme.surfaceContainerHigh.toArgb()
+            } else {
+                base.toArgb()
+            }
             val bgLuminance = relativeLuminance(bgArgb)
 
             fun makeVariant(delta: Float, ratio: Double): Int {

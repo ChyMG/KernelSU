@@ -83,6 +83,9 @@ annotation class SegmentedColumnDsl
 
 @Composable
 private fun defaultSegmentedColors(): ListItemColors = ListItemDefaults.segmentedColors(
+    // containerColor 已经是透明的了，contentColorFor() 对透明色返回
+    // Unspecified，所以这里必须显式给一个。
+    contentColor = colorScheme.onSurface,
     containerColor = colorScheme.surfaceBright,
     disabledContainerColor = colorScheme.surfaceBright,
     supportingContentColor = colorScheme.onSurfaceVariant
@@ -276,6 +279,7 @@ fun SegmentedItemContainer(
     Surface(
         modifier = modifier.fillMaxWidth(),
         color = colorScheme.surfaceBright,
+        contentColor = colorScheme.onSurface,
         shape = shapes.shape,
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {

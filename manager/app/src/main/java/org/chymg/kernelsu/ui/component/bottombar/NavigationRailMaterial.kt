@@ -34,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -78,7 +79,7 @@ fun NavigationRailMaterial(
         modifier = modifier.fillMaxHeight(),
         state = state,
         colors = WideNavigationRailDefaults.colors().copy(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onSurface,
         ),
         windowInsets = WindowInsets.systemBars.union(WindowInsets.displayCutout).only(

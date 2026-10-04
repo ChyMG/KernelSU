@@ -26,14 +26,28 @@ fun ColorScheme.amoledBackground(amoled: Boolean): ColorScheme =
     )
 
 /**
- * 把画在页面背景上的文字统一成 [color]。按钮、chip、状态卡等有色容器上的
- * on*Container 不动，否则浅色文字压在浅色容器上看不清。
+ * 全局「壁纸」配色：画在页面背景上的文字统一成 [textColor]，页面上的卡片/列表
+ * 容器换成 [transparentSurface]，让 MainActivity 里那张壁纸透出来。
+ *
+ * 刻意保持不透明的三个角色：
+ *  - `surface`：加载对话框（[androidx.compose.material3.Surface] 默认色）靠它撑底；
+ *  - `surfaceContainerHigh` / `surfaceContainerHighest`：搜索框、底部弹窗靠它们和壁纸拉开层次。
+ *
+ * 有色容器上的 on*Container 也不动，否则浅色文字压在浅色容器上看不清。
  */
-fun ColorScheme.withGlobalTextColor(color: Color = GlobalTextColor): ColorScheme = copy(
-    onBackground = color,
-    onSurface = color,
-    onSurfaceVariant = color,
-    inverseOnSurface = color,
+fun ColorScheme.withWallpaperTheme(
+    textColor: Color = GlobalTextColor,
+    transparentSurface: Color = Color.Transparent,
+): ColorScheme = copy(
+    onBackground = textColor,
+    onSurface = textColor,
+    onSurfaceVariant = textColor,
+    inverseOnSurface = textColor,
+
+    surfaceBright = transparentSurface,
+    surfaceContainerLow = transparentSurface,
+    surfaceContainerLowest = transparentSurface,
+    surfaceDim = transparentSurface,
 )
 
 @Composable

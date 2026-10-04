@@ -43,7 +43,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.rememberTopAppBarState
-import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,6 +53,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -444,8 +444,14 @@ private fun SimpleAppItem(
             containerColor = if (matched) {
                 colorScheme.secondaryContainer
             } else {
-                colorScheme.surfaceColorAtElevation(3.dp)
-            }
+                Color.Transparent
+            },
+            // 透明底上 contentColorFor() 会返回 Unspecified，文字色得显式给
+            contentColor = if (matched) {
+                colorScheme.onSecondaryContainer
+            } else {
+                colorScheme.onSurface
+            },
         ),
         content = { Text(app.label, overflow = TextOverflow.Ellipsis, maxLines = 1) },
         supportingContent = { Text(app.displayIdentifier, overflow = TextOverflow.Ellipsis, maxLines = 1) },

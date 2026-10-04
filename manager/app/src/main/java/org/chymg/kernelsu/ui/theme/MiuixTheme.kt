@@ -80,7 +80,7 @@ fun MiuixKernelSUTheme(
             MonetColorsProvider.UpdateCss()
             // LocalColors 在 miuix 库里是 internal，只能靠它另一个接收显式
             // colors 的 MiuixTheme 重载来换掉文字色。
-            MiuixTheme(colors = MiuixTheme.colorScheme.withGlobalTextColor()) {
+            MiuixTheme(colors = MiuixTheme.colorScheme.withWallpaperTheme()) {
                 CompositionLocalProvider(
                     LocalContentColor provides MiuixTheme.colorScheme.onBackground,
                 ) {
@@ -91,16 +91,28 @@ fun MiuixKernelSUTheme(
     )
 }
 
-/** 同 [androidx.compose.material3.ColorScheme.withGlobalTextColor]，但作用在 miuix 的配色上。 */
-private fun Colors.withGlobalTextColor(color: Color = GlobalTextColor): Colors = copy(
-    onBackground = color,
-    onBackgroundVariant = color,
-    onSurface = color,
-    onSurfaceSecondary = color,
-    onSurfaceVariantSummary = color,
-    onSurfaceVariantActions = color,
-    onSurfaceContainer = color,
-    onSurfaceContainerVariant = color,
-    onSurfaceContainerHigh = color,
-    onSurfaceContainerHighest = color,
+/**
+ * 全局「壁纸」配色，作用在 miuix 的 [Colors] 上，语义见
+ * [androidx.compose.material3.ColorScheme.withWallpaperTheme]。
+ *
+ * miuix 这边 `surfaceContainer` 同时撑着 Card 和下拉菜单（ListPopup），所以它
+ * 一透明，全局卡片和弹出菜单会一起透出壁纸；`background` / `surfaceContainerHigh`
+ * 分别留给对话框、底部弹窗和搜索框，层次才不会被抹平。
+ */
+private fun Colors.withWallpaperTheme(
+    textColor: Color = GlobalTextColor,
+    transparentSurface: Color = Color.Transparent,
+): Colors = copy(
+    onBackground = textColor,
+    onBackgroundVariant = textColor,
+    onSurface = textColor,
+    onSurfaceSecondary = textColor,
+    onSurfaceVariantSummary = textColor,
+    onSurfaceVariantActions = textColor,
+    onSurfaceContainer = textColor,
+    onSurfaceContainerVariant = textColor,
+    onSurfaceContainerHigh = textColor,
+    onSurfaceContainerHighest = textColor,
+
+    surfaceContainer = transparentSurface,
 )
