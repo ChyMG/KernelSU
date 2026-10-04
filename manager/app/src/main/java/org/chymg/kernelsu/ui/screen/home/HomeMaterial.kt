@@ -23,8 +23,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Warning
@@ -33,6 +31,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -193,12 +192,19 @@ private fun StatusCard(
         val ksuActive = state.ksuVersion != null
         val notInstalled = !ksuActive && state.kernelVersion.isGKI()
 
-        val containerColor = if (ksuActive) {
+        // 未安装时透明，让壁纸透出来；图标保留。
+        val surfaceColor = if (ksuActive) {
             MaterialTheme.colorScheme.secondaryContainer
         } else {
             MaterialTheme.colorScheme.errorContainer
         }
-        val contentColor = MaterialTheme.colorScheme.contentColorFor(containerColor)
+        val containerColor = if (notInstalled) Color.Transparent else surfaceColor
+        val contentColor = if (notInstalled) {
+            // 背景透明了，文字直接走全局色
+            MaterialTheme.colorScheme.onSurface
+        } else {
+            MaterialTheme.colorScheme.contentColorFor(surfaceColor)
+        }
 
         val statusIcon = when {
             ksuActive -> Icons.Rounded.CheckCircle
@@ -359,27 +365,32 @@ private fun SupportLinks(
         item {
             SegmentedListItem(
                 onClick = { onOpenUrl("https://patreon.com/weishu") },
+                // 透明，让壁纸透出来。
+                colors = transparentSegmentedColors(),
                 headlineContent = { Text(stringResource(R.string.home_support_title)) },
                 supportingContent = { Text(stringResource(R.string.home_support_content)) },
-                leadingContent = {
-                    Icon(Icons.Filled.VolunteerActivism, stringResource(R.string.home_support_title))
-                },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
             )
         }
         item {
             SegmentedListItem(
                 onClick = { onOpenUrl(learnMoreUrl) },
+                colors = transparentSegmentedColors(),
                 headlineContent = { Text(stringResource(R.string.home_learn_kernelsu)) },
                 supportingContent = { Text(stringResource(R.string.home_click_to_learn_kernelsu)) },
-                leadingContent = {
-                    Icon(Icons.AutoMirrored.Filled.MenuBook, stringResource(R.string.home_learn_kernelsu))
-                },
                 trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) },
             )
         }
     }
 }
+
+/** 透明列表项配色，标题/正文沿用全局淡蓝。 */
+@Composable
+private fun transparentSegmentedColors(): ListItemColors = ListItemDefaults.segmentedColors(
+    containerColor = Color.Transparent,
+    disabledContainerColor = Color.Transparent,
+    supportingContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+)
 
 @Composable
 private fun InfoCard(
@@ -394,12 +405,8 @@ private fun InfoCard(
     ) {
         SegmentedListItem(
             modifier = modifier,
-            // Transparent so the wallpaper painted in MainActivity shows through.
-            colors = ListItemDefaults.segmentedColors(
-                containerColor = Color.Transparent,
-                disabledContainerColor = Color.Transparent,
-                supportingContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-            ),
+            // 透明，让壁纸透出来。
+            colors = transparentSegmentedColors(),
             headlineContent = { Text(text = label, style = MaterialTheme.typography.bodyLarge) },
             supportingContent = {
                 Text(

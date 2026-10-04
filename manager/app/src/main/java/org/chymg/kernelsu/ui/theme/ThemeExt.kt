@@ -25,6 +25,17 @@ fun ColorScheme.amoledBackground(amoled: Boolean): ColorScheme =
         surfaceContainerHighest = Color.Black,
     )
 
+/**
+ * 把画在页面背景上的文字统一成 [color]。按钮、chip、状态卡等有色容器上的
+ * on*Container 不动，否则浅色文字压在浅色容器上看不清。
+ */
+fun ColorScheme.withGlobalTextColor(color: Color = GlobalTextColor): ColorScheme = copy(
+    onBackground = color,
+    onSurface = color,
+    onSurfaceVariant = color,
+    inverseOnSurface = color,
+)
+
 @Composable
 fun rememberKernelSUColorScheme(
     seedColor: Color,

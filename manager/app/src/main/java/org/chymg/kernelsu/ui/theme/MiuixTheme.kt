@@ -13,6 +13,7 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.materialkolor.dynamiccolor.ColorSpec
 import org.chymg.kernelsu.ui.webui.MonetColorsProvider
 import top.yukonga.miuix.kmp.theme.ColorSchemeMode
+import top.yukonga.miuix.kmp.theme.Colors
 import top.yukonga.miuix.kmp.theme.LocalContentColor
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.ThemeColorSpec
@@ -77,11 +78,29 @@ fun MiuixKernelSUTheme(
                 }
             }
             MonetColorsProvider.UpdateCss()
-            CompositionLocalProvider(
-                LocalContentColor provides MiuixTheme.colorScheme.onBackground,
-            ) {
-                content()
+            // LocalColors 在 miuix 库里是 internal，只能靠它另一个接收显式
+            // colors 的 MiuixTheme 重载来换掉文字色。
+            MiuixTheme(colors = MiuixTheme.colorScheme.withGlobalTextColor()) {
+                CompositionLocalProvider(
+                    LocalContentColor provides MiuixTheme.colorScheme.onBackground,
+                ) {
+                    content()
+                }
             }
         }
     )
 }
+
+/** 同 [androidx.compose.material3.ColorScheme.withGlobalTextColor]，但作用在 miuix 的配色上。 */
+private fun Colors.withGlobalTextColor(color: Color = GlobalTextColor): Colors = copy(
+    onBackground = color,
+    onBackgroundVariant = color,
+    onSurface = color,
+    onSurfaceSecondary = color,
+    onSurfaceVariantSummary = color,
+    onSurfaceVariantActions = color,
+    onSurfaceContainer = color,
+    onSurfaceContainerVariant = color,
+    onSurfaceContainerHigh = color,
+    onSurfaceContainerHighest = color,
+)
