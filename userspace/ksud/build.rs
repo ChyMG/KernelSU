@@ -37,7 +37,11 @@ fn get_git_version() -> Result<(u32, String), std::io::Error> {
             .stdout,
     )
     .map_err(|_| std::io::Error::other("Failed to read git describe stdout"))?;
-    let version_name = format!("{}{VERSION_NAME_SUFFIX}", version_name.trim_start_matches('v'));
+    // `git describe` terminates its output with a newline. It has to go before the
+    // suffix is appended: cargo parses `cargo:rustc-env=` line by line, so anything
+    // after an embedded newline lands on its own line and gets dropped.
+    let version_name = version_name.trim().trim_start_matches('v').to_string();
+    let version_name = format!("{version_name}{VERSION_NAME_SUFFIX}");
     Ok((version_code, version_name))
 }
 
