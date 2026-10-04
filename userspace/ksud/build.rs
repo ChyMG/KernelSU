@@ -9,6 +9,14 @@ const BOOTSTRAP_SOURCE: &str = "src/lkm_image_bootstrap.S";
 const BOOTSTRAP_OBJECT: &str = "lkm_image_bootstrap.o";
 const PREPARED_BOOTSTRAP_OBJECT: &str = ".lkm_image_bootstrap.o";
 
+/// Version name suffix marking a build from the ChyMG branch.
+///
+/// Applied to `VERSION_NAME` only, never to `VERSION_CODE`: the latter is the
+/// bare `30000 + git commit count` number and module scripts do numeric
+/// comparisons on the `KSU_VER_CODE` they get from us, so a string there would
+/// break them.
+const VERSION_NAME_SUFFIX: &str = "-ChyMG";
+
 fn get_git_version() -> Result<(u32, String), std::io::Error> {
     let output = Command::new("git")
         .args(["rev-list", "--count", "HEAD"])
@@ -29,7 +37,7 @@ fn get_git_version() -> Result<(u32, String), std::io::Error> {
             .stdout,
     )
     .map_err(|_| std::io::Error::other("Failed to read git describe stdout"))?;
-    let version_name = version_name.trim_start_matches('v').to_string();
+    let version_name = format!("{}{VERSION_NAME_SUFFIX}", version_name.trim_start_matches('v'));
     Ok((version_code, version_name))
 }
 
@@ -230,7 +238,7 @@ fn main() {
         Err(_) => {
             // show warning if git is not installed
             println!("cargo:warning=Failed to get git version, using 0.0.0");
-            (0, "0.0.0".to_string())
+            (0, format!("0.0.0{VERSION_NAME_SUFFIX}"))
         }
     };
     if env::var("KSU_PACKAGE_NAME").is_err() {

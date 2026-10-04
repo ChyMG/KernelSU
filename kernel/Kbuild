@@ -115,14 +115,22 @@ endif
 
 
 # Calculate version if git version is available
+#
+# KSU_VERSION is handed back to userspace as a plain __u32 through
+# ksu_get_info_cmd.version, so it cannot carry a string suffix: the Manager
+# compares it against the manager version code. The suffix below therefore only
+# decorates the build log.
+KSU_VERSION_NAME_SUFFIX := -ChyMG
+
 ifdef KSU_GIT_VERSION_VALID
 # ksu_version: major * 10000 + git version + 200 for historical reasons
 $(eval KSU_VERSION=$(shell expr 30000 + $(KSU_GIT_VERSION)))
-$(info -- KernelSU version: $(KSU_VERSION))
+$(info -- KernelSU version: $(KSU_VERSION)$(KSU_VERSION_NAME_SUFFIX))
 ccflags-y += -DKSU_VERSION=$(KSU_VERSION)
 else
 # If there is no .git directory, use default version
 $(warning "KSU_GIT_VERSION not defined! It is better to make KernelSU a git repository!")
+$(info -- KernelSU version: 16$(KSU_VERSION_NAME_SUFFIX))
 ccflags-y += -DKSU_VERSION=16
 endif
 

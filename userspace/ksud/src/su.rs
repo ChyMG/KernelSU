@@ -227,7 +227,7 @@ pub fn root_shell() -> Result<()> {
     }
 
     if matches.opt_present("v") {
-        println!("{}:KernelSU", defs::VERSION_NAME);
+        println!("{}:VER-ChyMG", defs::VERSION_NAME);
         return Ok(());
     }
 
