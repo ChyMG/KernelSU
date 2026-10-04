@@ -42,18 +42,46 @@ jobs:
   # (see defaultManagerPackageName in manager/app/build.gradle.kts). PR builds
   # use a suffixed id, which the kernel module has to be told about explicitly
   # because KSU_MANAGER_PACKAGE is pinned in kernel/Kbuild.
+  #
+  # This job also decides which refs may consume the release signing key and
+  # publish artifacts. It previously inlined that check in every step, which
+  # silently skipped `ci` pushes even though `ci` is a push trigger below.
   manager-package:
     runs-on: ubuntu-latest
     outputs:
       package: ${{ steps.pkg.outputs.package }}
+      can_sign: ${{ steps.pkg.outputs.can_sign }}
+      can_upload: ${{ steps.pkg.outputs.can_upload }}
     steps:
-      - name: Resolve Manager package name
+      - name: Resolve Manager package name and ref permissions
         id: pkg
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          REF_TYPE: ${{ github.ref_type }}
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "package=org.chymg.kernelsu.pr" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "package=org.chymg.kernelsu.pr" >> "$GITHUB_OUTPUT"
           else
-            echo "package=org.chymg.kernelsu" >> $GITHUB_OUTPUT
+            echo "package=org.chymg.kernelsu" >> "$GITHUB_OUTPUT"
+          fi
+
+          CAN_SIGN=false
+          if [ "$EVENT_NAME" != "pull_request" ] && {
+            [ "$REF_TYPE" = "tag" ] ||
+            [ "$REF" = "refs/heads/main" ] ||
+            [ "$REF" = "refs/heads/dev" ] ||
+            [ "$REF" = "refs/heads/ci" ]
+          }; then
+            CAN_SIGN=true
+          fi
+          echo "can_sign=$CAN_SIGN" >> "$GITHUB_OUTPUT"
+
+          if [ "$EVENT_NAME" = "pull_request" ] || [ "$CAN_SIGN" = "true" ]; then
+            echo "can_upload=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "can_upload=false" >> "$GITHUB_OUTPUT"
           fi
 
   generate-key:
@@ -160,12 +188,15 @@ jobs:
       pack_ksuinit: true
 
   build-manager:
-    needs: [generate-key]
+    needs: [generate-key, manager-package]
     if: always() && needs.generate-key.result == 'success'
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./manager
+    env:
+      CAN_SIGN: ${{ needs.manager-package.outputs.can_sign }}
+      CAN_UPLOAD: ${{ needs.manager-package.outputs.can_upload }}
 
     steps:
       - name: Checkout
@@ -174,7 +205,7 @@ jobs:
           fetch-depth: 0
 
       - name: Write key
-        if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' )) || github.ref_type == 'tag' }}
+        if: env.CAN_SIGN == 'true'
         run: |
           if [ ! -z "${{ secrets.KEYSTORE }}" ]; then
             {
@@ -219,7 +250,7 @@ jobs:
           fi
 
       - name: Upload build artifact
-        if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')) || github.ref_type == 'tag' }}
+        if: env.CAN_UPLOAD == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: manager-gradle
@@ -227,15 +258,18 @@ jobs:
 
       - name: Upload mappings
         uses: actions/upload-artifact@v7
-        if: ${{ ( github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' )) || github.ref_type == 'tag' }}
+        if: env.CAN_SIGN == 'true'
         with:
           name: "mappings"
           path: "manager/app/build/outputs/mapping/release/"
 
   repack-manager:
-    needs: [build-manager, build-ksud, generate-key]
+    needs: [build-manager, build-ksud, generate-key, manager-package]
     if: always() && needs.build-manager.result == 'success' && needs.build-ksud.result == 'success' && needs.generate-key.result == 'success'
     runs-on: ubuntu-latest
+    env:
+      CAN_SIGN: ${{ needs.manager-package.outputs.can_sign }}
+      CAN_UPLOAD: ${{ needs.manager-package.outputs.can_upload }}
 
     steps:
       - name: Checkout
@@ -297,7 +331,7 @@ jobs:
           cp -f "$RISCV64_KSUD" target/riscv64-linux-android/release/ksud
 
       - name: Prepare signing inputs
-        if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')) || github.ref_type == 'tag' }}
+        if: env.CAN_UPLOAD == 'true'
         env:
           PR_KEYSTORE: ${{ needs.generate-key.outputs.keystore }}
           PR_KEYSTORE_PASSWORD: ${{ needs.generate-key.outputs.keystore_password }}
@@ -323,7 +357,7 @@ jobs:
           fi
 
       - name: Repack and resign
-        if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')) || github.ref_type == 'tag' }}
+        if: env.CAN_UPLOAD == 'true'
         run: |
           python3 repack_apk.py repack \
             -b release \
@@ -338,7 +372,7 @@ jobs:
             --strip
 
       - name: Upload build artifact
-        if: ${{ github.event_name == 'pull_request' || (github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev')) || github.ref_type == 'tag' }}
+        if: env.CAN_UPLOAD == 'true'
         uses: actions/upload-artifact@v7
         with:
           name: manager
