@@ -240,3 +240,12 @@ bool is_selinux_hide_enabled() {
     }
     return value != 0;
 }
+
+bool is_selinux_hide_supported() {
+    uint64_t value = 0;
+    bool supported = false;
+    if (!get_feature(KSU_FEATURE_SELINUX_HIDE, &value, &supported)) {
+        return false;
+    }
+    return supported;
+}

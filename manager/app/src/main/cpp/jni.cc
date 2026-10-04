@@ -366,6 +366,12 @@ Java_org_chymg_kernelsu_Natives_setSelinuxHideEnabled(JNIEnv *env, jobject thiz,
 }
 
 extern "C"
+JNIEXPORT jboolean JNICALL
+Java_org_chymg_kernelsu_Natives_isSelinuxHideSupported(JNIEnv *env, jobject thiz) {
+    return is_selinux_hide_supported();
+}
+
+extern "C"
 JNIEXPORT jstring JNICALL
 Java_org_chymg_kernelsu_Natives_getUserName(JNIEnv *env, jobject thiz, jint uid) {
     struct passwd *pw = getpwuid((uid_t) uid);

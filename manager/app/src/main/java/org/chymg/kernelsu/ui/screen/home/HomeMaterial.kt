@@ -270,21 +270,10 @@ private fun StatusCard(
                 trailingContent = statusTrailing,
                 overlineContent = null,
                 supportingContent = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = statusSummary,
-                            modifier = Modifier.weight(1f, fill = false),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        if (state.showCustomLkmBadge) {
-                            Spacer(Modifier.width(8.dp))
-                            StatusTag(
-                                label = stringResource(R.string.home_lkm_custom),
-                                contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
-                                backgroundColor = MaterialTheme.colorScheme.tertiaryContainer,
-                            )
-                        }
-                    }
+                    Text(
+                        text = statusSummary,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 },
                 verticalAlignment = Alignment.CenterVertically,
                 colors = ListItemDefaults.colors(

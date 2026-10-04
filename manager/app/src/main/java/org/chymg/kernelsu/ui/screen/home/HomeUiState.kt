@@ -39,9 +39,6 @@ data class HomeUiState(
                 !requiresNewKernel &&
                 !requiresNewManager
 
-    val showCustomLkmBadge: Boolean
-        get() = lkmMode == true && !isLkmBundled
-
     val showRootWarning: Boolean
         get() = ksuVersion != null && !isRootAvailable
 

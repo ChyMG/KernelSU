@@ -56,7 +56,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.flow.onEach
 import org.chymg.kernelsu.R
-import org.chymg.kernelsu.ui.component.miuix.effect.ColorBlendToken
 import org.chymg.kernelsu.ui.theme.LocalEnableBlur
 import org.chymg.kernelsu.ui.theme.isInDarkTheme
 import org.chymg.kernelsu.ui.util.BlurredBar
@@ -172,10 +171,6 @@ private fun AboutContent(
     val isInDark = isInDarkTheme()
     val enableBlur = LocalEnableBlur.current
 
-    val blendColors = remember(isInDark) {
-        if (isInDark) ColorBlendToken.Overlay_Thin_Light
-        else ColorBlendToken.Pured_Regular_Light
-    }
     val logoBlend = remember(isInDark) {
         if (isInDark) {
             listOf(
@@ -402,14 +397,21 @@ private fun AboutContent(
                                         backdrop = backdrop,
                                         shape = RoundedCornerShape(16.dp),
                                         blurRadius = 60f,
-                                        colors = BlurColors(blendColors = blendColors),
+                                        // 这张卡原来混的是 Pured_Regular_Light，其中
+                                        // 0xB3FFFFFF + HardLight 等于刷了一层白，压在
+                                        // 壁纸上文字就看不清了。改成全透明。
+                                        colors = BlurColors(
+                                            blendColors = listOf(BlendColorEntry(Color.Transparent))
+                                        ),
                                         enabled = true,
                                     )
                                 } else Modifier
                             ),
                         colors = CardDefaults.defaultColors(
-                            if (enableBlur) Color.Transparent else colorScheme.surfaceContainer,
-                            Color.Transparent,
+                            containerColor = Color.Transparent,
+                            // contentColor 给成 Transparent 会让整张卡里的文字连同
+                            // LocalContentColor 一起消失，这里给回壁纸主题的正文色。
+                            contentColor = colorScheme.onBackground,
                         ),
                     ) {
                         state.links.forEach {

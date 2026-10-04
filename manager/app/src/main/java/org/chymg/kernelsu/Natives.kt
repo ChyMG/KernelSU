@@ -94,6 +94,13 @@ object Natives {
     external fun setSelinuxHideEnabled(enabled: Boolean): Int
 
     /**
+     * Whether the running kernel exposes the SELinux hide feature handler.
+     * Asks the kernel directly, so it stays correct even when no root shell is
+     * available to run `ksud feature check`.
+     */
+    external fun isSelinuxHideSupported(): Boolean
+
+    /**
      * Get the user name for the uid.
      */
     external fun getUserName(uid: Int): String?

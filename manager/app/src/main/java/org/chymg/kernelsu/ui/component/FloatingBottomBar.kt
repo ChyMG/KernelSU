@@ -216,8 +216,10 @@ fun FloatingBottomBar(
     val pillShape = remember { CircleShape }
     val accentColor = MiuixTheme.colorScheme.primary
     val tabContentColor = MiuixTheme.colorScheme.onSurface
-    val surfaceContainer = MiuixTheme.colorScheme.surfaceContainer
-    val containerColor = if (isBlurEnabled) surfaceContainer.copy(0.4f) else surfaceContainer
+    // 底栏壳子保持全透明：surfaceContainer 在壁纸主题下已经是 Transparent，
+// 这里再 copy(0.4f) 也只是把 alpha 乘 0，等于什么都不画，靠背后的模糊和
+// 高光表现液态玻璃。
+    val containerColor = Color.Transparent
 
     val tabsBackdrop = rememberLayerBackdrop()
     val density = LocalDensity.current

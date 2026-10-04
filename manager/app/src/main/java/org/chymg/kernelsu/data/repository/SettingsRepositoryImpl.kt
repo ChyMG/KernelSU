@@ -190,7 +190,15 @@ class SettingsRepositoryImpl : SettingsRepository {
 
     override fun setKernelUmountEnabled(enabled: Boolean): Boolean = Natives.setKernelUmountEnabled(enabled)
 
-    override suspend fun getSelinuxHideStatus(): String = getFeatureStatus("selinux_hide")
+    override suspend fun getSelinuxHideStatus(): String {
+        val status = getFeatureStatus("selinux_hide")
+        // 由模块接管时优先按 managed 显示。
+        if (status == "managed") return "managed"
+        // 走 ksud 那条路要 root shell，shell 拿不到时 out 是空串，开关就会一直
+        // 灰着点不动。Manager 自己就是内核授权的调用方，直接问内核要 supported
+        // 更可靠；只有内核真的没注册 handler 时才认 ksud 的结论。
+        return if (Natives.isSelinuxHideSupported()) "supported" else status
+    }
 
     override fun isSelinuxHideEnabled(): Boolean = Natives.isSelinuxHideEnabled()
 

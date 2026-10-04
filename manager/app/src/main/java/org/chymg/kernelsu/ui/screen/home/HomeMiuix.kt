@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CheckCircleOutline
@@ -52,7 +51,6 @@ import org.chymg.kernelsu.ui.component.WarningLevel
 import org.chymg.kernelsu.ui.component.dialog.rememberConfirmDialog
 import org.chymg.kernelsu.ui.component.miuix.WarningCard
 import org.chymg.kernelsu.ui.component.rebootlistpopup.RebootListPopupMiuix
-import org.chymg.kernelsu.ui.component.statustag.StatusTag
 import org.chymg.kernelsu.ui.theme.LocalEnableBlur
 import org.chymg.kernelsu.ui.theme.isInDarkTheme
 import org.chymg.kernelsu.ui.util.BlurredBar
@@ -322,36 +320,13 @@ private fun StatusCard(
                                         fontWeight = FontWeight.SemiBold,
                                     )
                                     Spacer(Modifier.height(1.dp))
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-                                            text = stringResource(
-                                                R.string.home_working_version,
-                                                "${state.ksuVersion}-${state.kernelUAPIVersion}"
-                                            ),
-                                            modifier = Modifier.weight(1f, fill = false),
-                                            fontSize = 15.sp,
-                                        )
-                                        if (state.showCustomLkmBadge) {
-                                            Spacer(Modifier.width(8.dp))
-                                            StatusTag(
-                                                label = stringResource(R.string.home_lkm_custom),
-                                                contentColor = if (isDynamicColor) {
-                                                    colorScheme.onTertiaryContainer
-                                                } else if (isInDarkTheme()) {
-                                                    Color(0xFFB8E8C5)
-                                                } else {
-                                                    Color(0xFF164A29)
-                                                },
-                                                backgroundColor = if (isDynamicColor) {
-                                                    colorScheme.tertiaryContainer
-                                                } else if (isInDarkTheme()) {
-                                                    Color(0xFF315D3E)
-                                                } else {
-                                                    Color(0xFFB8E8C5)
-                                                },
-                                            )
-                                        }
-                                    }
+                                    Text(
+                                        text = stringResource(
+                                            R.string.home_working_version,
+                                            "${state.ksuVersion}-${state.kernelUAPIVersion}"
+                                        ),
+                                        fontSize = 15.sp,
+                                    )
                                 }
                             }
                         }
