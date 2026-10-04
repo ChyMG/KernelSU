@@ -131,17 +131,22 @@ $(info -- KSU_NEW_DCACHE_FLUSH: $(KSU_NEW_DCACHE_FLUSH))
 
 
 ifndef KSU_EXPECTED_SIZE
-KSU_EXPECTED_SIZE := 0x033b
+KSU_EXPECTED_SIZE := 0x0320
 endif
 
 ifndef KSU_EXPECTED_HASH
-KSU_EXPECTED_HASH := c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc2d2d6
+KSU_EXPECTED_HASH := 83785a4a145d793b26a0b32fb69bc2c35f02317de3f2f44f1fa955e0023ca5fd
 endif
 
-ifdef KSU_MANAGER_PACKAGE
+# The only Manager this kernel module accepts. Both the package name and the
+# signing certificate below are pinned: an APK must match both to be granted
+# manager privileges. Override at build time only for local/PR builds.
+ifndef KSU_MANAGER_PACKAGE
+KSU_MANAGER_PACKAGE := org.chymg.kernelsu
+endif
+
 ccflags-y += -DKSU_MANAGER_PACKAGE=\"$(KSU_MANAGER_PACKAGE)\"
 $(info -- KernelSU Manager package name: $(KSU_MANAGER_PACKAGE))
-endif
 
 $(info -- KernelSU Manager signature size: $(KSU_EXPECTED_SIZE))
 $(info -- KernelSU Manager signature hash: $(KSU_EXPECTED_HASH))

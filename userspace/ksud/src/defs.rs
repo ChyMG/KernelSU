@@ -59,6 +59,13 @@ mod android {
     pub const KSU_TEMP_BACKUP_DIR_NAME: &str = "boot_backup";
 
     pub const DEFAULT_PACKAGE_NAME: &str = env!("KSU_PACKAGE_NAME");
+
+    /// Fully-qualified component of the Manager launcher activity.
+    ///
+    /// This is the *code* package of the Manager app, which is independent from
+    /// the application id (`DEFAULT_PACKAGE_NAME`) so that suffixed builds such
+    /// as `.pr` still resolve the right activity.
+    pub const MANAGER_LAUNCH_ACTIVITY: &str = "org.chymg.kernelsu.ui.MainActivity";
 }
 
 #[allow(unused)]
