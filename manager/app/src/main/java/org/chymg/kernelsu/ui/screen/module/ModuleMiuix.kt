@@ -255,8 +255,7 @@ fun ModulePagerMiuix(
     val refreshTick = remember { mutableIntStateOf(0) }
 
     val backdrop = rememberBlurBackdrop(enableBlur)
-    val blurActive = backdrop != null
-    val barColor = if (blurActive) Color.Transparent else colorScheme.surface
+    val barColor = Color.Transparent
 
     Scaffold(
         containerColor = Color.Transparent,

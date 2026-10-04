@@ -151,8 +151,7 @@ fun ModuleRepoScreenMiuix(
 
     val enableBlur = LocalEnableBlur.current
     val backdrop = rememberBlurBackdrop(enableBlur)
-    val blurActive = backdrop != null
-    val barColor = if (blurActive) Color.Transparent else colorScheme.surface
+    val barColor = Color.Transparent
 
     Scaffold(
         containerColor = Color.Transparent,
@@ -1046,8 +1045,7 @@ fun ModuleRepoDetailScreenMiuix(
     val scrollBehavior = MiuixScrollBehavior()
 
     val backdrop = rememberBlurBackdrop(enableBlur)
-    val blurActive = backdrop != null
-    val detailBarColor = if (blurActive) Color.Transparent else colorScheme.surface
+    val detailBarColor = Color.Transparent
 
     val tabs = listOf(
         stringResource(R.string.tab_readme), stringResource(R.string.tab_releases), stringResource(R.string.tab_info)
@@ -1103,7 +1101,7 @@ fun ModuleRepoDetailScreenMiuix(
                                 }
                             },
                             colors = TabRowDefaults.tabRowColors(
-                                backgroundColor = if (blurActive) Color.Transparent else colorScheme.surface
+                                backgroundColor = Color.Transparent
                             ),
                             height = tabRowHeight,
                         )

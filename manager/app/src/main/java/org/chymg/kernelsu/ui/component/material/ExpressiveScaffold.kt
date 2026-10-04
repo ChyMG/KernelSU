@@ -45,7 +45,9 @@ fun ExpressiveScaffold(
 
 @Composable
 fun expressiveTopAppBarColors(
-    containerColor: Color = MaterialTheme.colorScheme.surfaceContainer,
+    // Transparent so the wallpaper painted in MainActivity shows through the
+    // title bar, both expanded and collapsed.
+    containerColor: Color = Color.Transparent,
     scrolledContainerColor: Color = containerColor,
 ): TopAppBarColors = TopAppBarDefaults.topAppBarColors(
     containerColor = containerColor,

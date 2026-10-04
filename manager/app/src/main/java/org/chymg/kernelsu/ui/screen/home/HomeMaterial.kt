@@ -24,12 +24,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.DeveloperBoard
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Smartphone
-import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -52,7 +46,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
@@ -395,15 +388,19 @@ private fun InfoCard(
 ) {
     @Composable
     fun InfoCardItem(
-        icon: ImageVector,
         label: String,
         content: String,
         modifier: Modifier = Modifier,
     ) {
         SegmentedListItem(
             modifier = modifier,
+            // Transparent so the wallpaper painted in MainActivity shows through.
+            colors = ListItemDefaults.segmentedColors(
+                containerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent,
+                supportingContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            ),
             headlineContent = { Text(text = label, style = MaterialTheme.typography.bodyLarge) },
-            leadingContent = { Icon(imageVector = icon, contentDescription = label) },
             supportingContent = {
                 Text(
                     text = content,
@@ -435,28 +432,24 @@ private fun InfoCard(
         SegmentedColumn(modifier = Modifier.fillMaxWidth()) {
             item {
                 InfoCardItem(
-                    icon = Icons.Filled.Tag,
                     label = stringResource(R.string.home_manager_version),
                     content = systemInfo.managerVersion,
                 )
             }
             item {
                 InfoCardItem(
-                    icon = Icons.Filled.DeveloperBoard,
                     label = stringResource(R.string.home_kernel),
                     content = systemInfo.kernelVersion,
                 )
             }
             item {
                 InfoCardItem(
-                    icon = Icons.Filled.Smartphone,
                     label = stringResource(R.string.home_device_model),
                     content = systemInfo.deviceModel,
                 )
             }
             item {
                 InfoCardItem(
-                    icon = Icons.Filled.Fingerprint,
                     label = stringResource(R.string.home_fingerprint),
                     content = systemInfo.fingerprint,
                 )
@@ -465,14 +458,12 @@ private fun InfoCard(
         SegmentedColumn(modifier = Modifier.fillMaxWidth()) {
             item {
                 InfoCardItem(
-                    icon = Icons.Filled.Security,
                     label = stringResource(R.string.home_selinux_status),
                     content = selinuxDisplay,
                 )
             }
             item {
                 InfoCardItem(
-                    icon = Icons.Filled.FilterList,
                     label = stringResource(R.string.home_seccomp_status),
                     content = seccompDisplay,
                 )

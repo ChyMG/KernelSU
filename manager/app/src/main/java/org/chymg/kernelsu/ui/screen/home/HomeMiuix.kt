@@ -30,12 +30,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.MenuBook
-import androidx.compose.material.icons.filled.DeveloperBoard
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material.icons.filled.Fingerprint
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.Smartphone
-import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.ErrorOutline
@@ -44,7 +38,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.UriHandler
@@ -97,8 +90,7 @@ fun HomePagerMiuix(
     val scrollBehavior = MiuixScrollBehavior()
     val enableBlur = LocalEnableBlur.current
     val backdrop = rememberBlurBackdrop(enableBlur)
-    val blurActive = backdrop != null
-    val barColor = if (blurActive) Color.Transparent else colorScheme.surface
+    val barColor = Color.Transparent
     Scaffold(
         containerColor = Color.Transparent,
         topBar = {
@@ -478,39 +470,27 @@ private fun InfoCard(
 ) {
     @Composable
     fun InfoText(
-        icon: ImageVector,
         title: String,
         content: String,
         bottomPadding: Dp = 24.dp
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = bottomPadding),
-            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                modifier = Modifier
-                    .padding(end = 12.dp)
-                    .size(24.dp),
-                tint = colorScheme.onSurface,
+            Text(
+                text = title,
+                fontSize = MiuixTheme.textStyles.headline1.fontSize,
+                fontWeight = FontWeight.Medium,
+                color = colorScheme.onSurface,
             )
-            Column {
-                Text(
-                    text = title,
-                    fontSize = MiuixTheme.textStyles.headline1.fontSize,
-                    fontWeight = FontWeight.Medium,
-                    color = colorScheme.onSurface,
-                )
-                Text(
-                    text = content,
-                    fontSize = MiuixTheme.textStyles.body2.fontSize,
-                    color = colorScheme.onSurfaceVariantSummary,
-                    modifier = Modifier.padding(top = 2.dp),
-                )
-            }
+            Text(
+                text = content,
+                fontSize = MiuixTheme.textStyles.body2.fontSize,
+                color = colorScheme.onSurfaceVariantSummary,
+                modifier = Modifier.padding(top = 2.dp),
+            )
         }
     }
 
@@ -532,40 +512,41 @@ private fun InfoCard(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Card(modifier = Modifier.fillMaxWidth()) {
+        // Transparent so the wallpaper painted in MainActivity shows through.
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.defaultColors(color = Color.Transparent),
+        ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 InfoText(
-                    icon = Icons.Filled.Tag,
                     title = stringResource(R.string.home_manager_version),
                     content = systemInfo.managerVersion,
                 )
                 InfoText(
-                    icon = Icons.Filled.DeveloperBoard,
                     title = stringResource(R.string.home_kernel),
                     content = systemInfo.kernelVersion,
                 )
                 InfoText(
-                    icon = Icons.Filled.Smartphone,
                     title = stringResource(R.string.home_device_model),
                     content = systemInfo.deviceModel,
                 )
                 InfoText(
-                    icon = Icons.Filled.Fingerprint,
                     title = stringResource(R.string.home_fingerprint),
                     content = systemInfo.fingerprint,
                     bottomPadding = 0.dp,
                 )
             }
         }
-        Card(modifier = Modifier.fillMaxWidth()) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.defaultColors(color = Color.Transparent),
+        ) {
             Column(modifier = Modifier.padding(16.dp)) {
                 InfoText(
-                    icon = Icons.Filled.Security,
                     title = stringResource(R.string.home_selinux_status),
                     content = selinuxDisplay,
                 )
                 InfoText(
-                    icon = Icons.Filled.FilterList,
                     title = stringResource(R.string.home_seccomp_status),
                     content = seccompDisplay,
                     bottomPadding = 0.dp,
