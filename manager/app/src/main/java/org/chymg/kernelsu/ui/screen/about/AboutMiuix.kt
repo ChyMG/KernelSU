@@ -408,7 +408,7 @@ private fun AboutContent(
                                 } else Modifier
                             ),
                         colors = CardDefaults.defaultColors(
-                            containerColor = Color.Transparent,
+                            color = Color.Transparent,
                             // contentColor 给成 Transparent 会让整张卡里的文字连同
                             // LocalContentColor 一起消失，这里给回壁纸主题的正文色。
                             contentColor = colorScheme.onBackground,
