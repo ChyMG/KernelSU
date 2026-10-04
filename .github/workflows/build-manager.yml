@@ -38,6 +38,24 @@ on:
   workflow_call:
 
 jobs:
+  # Single source of truth for the application id the Gradle build produces
+  # (see defaultManagerPackageName in manager/app/build.gradle.kts). PR builds
+  # use a suffixed id, which the kernel module has to be told about explicitly
+  # because KSU_MANAGER_PACKAGE is pinned in kernel/Kbuild.
+  manager-package:
+    runs-on: ubuntu-latest
+    outputs:
+      package: ${{ steps.pkg.outputs.package }}
+    steps:
+      - name: Resolve Manager package name
+        id: pkg
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "package=org.chymg.kernelsu.pr" >> $GITHUB_OUTPUT
+          else
+            echo "package=org.chymg.kernelsu" >> $GITHUB_OUTPUT
+          fi
+
   generate-key:
     runs-on: ubuntu-latest
     outputs:
@@ -94,11 +112,12 @@ jobs:
           echo "Certificate hash: $HASH"
 
   build-lkm:
-    needs: generate-key
+    needs: [generate-key, manager-package]
     uses: ./.github/workflows/build-lkm.yml
     with:
       expected_size2: ${{ needs.generate-key.outputs.expected_size || '' }}
       expected_hash2: ${{ needs.generate-key.outputs.expected_hash || '' }}
+      manager_package: ${{ needs.manager-package.outputs.package }}
     secrets: inherit
 
   build-ksuinit:
